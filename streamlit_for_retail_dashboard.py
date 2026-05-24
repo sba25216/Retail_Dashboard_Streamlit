@@ -1,61 +1,54 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
 
 
-
-st.set_page_config(
-    page_title="Brazilian Ecommerce Retail Dashboard",
-    layout="wide"
-)
-
+# Page title
+st.title("Brazilian E-Commerce Retail Dashboard")
 
 
 # Load dataset
-
 @st.cache_data
 def load_data():
-    df = pd.read_csv("master_retail_dataset.csv")
-
-    df["order_purchase_timestamp"] = pd.to_datetime(
-        df["order_purchase_timestamp"]
+    data = pd.read_csv("master_retail_dataset.csv")
+    data["order_purchase_timestamp"] = pd.to_datetime(
+        data["order_purchase_timestamp"],
+        errors="coerce"
     )
+    return data
 
-    return df
 
-
+data_load_state = st.text("Loading data...")
 df = load_data()
+data_load_state.text("Done! Dataset loaded successfully.")
 
 
-
-# Dashboard title
-
-
-st.title("Brazilian E-Commerce Retail Dashboard")
-
-st.markdown(
+# Dashboard description
+st.write(
     """
-    This dashboard summarises key retail insights from the merged Olist e-commerce dataset.
-    It is designed with clear charts, large labels, simple filters, and minimal clutter to support adults aged 65+.
+    This dashboard summarises the most important aspects of the Brazilian Olist retail dataset.
+    It uses simple filters and clear charts suitable for adults aged 65+.
     """
 )
 
 
+# Show raw data option similar to Streamlit sample
+if st.checkbox("Show raw data"):
+    st.subheader("Raw Data")
+    st.write(df.head(100))
+
 
 # Sidebar filters
-
-
-st.sidebar.header("Dashboard Filters")
+st.sidebar.header("Filters")
 
 selected_state = st.sidebar.selectbox(
-    "Select Customer State",
+    "Choose Customer State",
     ["All"] + sorted(df["customer_state"].dropna().unique().tolist())
 )
 
 selected_payment = st.sidebar.selectbox(
-    "Select Payment Type",
+    "Choose Payment Type",
     ["All"] + sorted(df["payment_type"].dropna().unique().tolist())
 )
 
@@ -73,9 +66,8 @@ if selected_payment != "All":
     ]
 
 
-
-# KPI cards
-
+# KPI summary
+st.subheader("Dashboard Summary")
 
 total_orders = filtered_df["order_id"].nunique()
 total_customers = filtered_df["customer_unique_id"].nunique()
@@ -90,10 +82,7 @@ col3.metric("Total Products", f"{total_products:,}")
 col4.metric("Total Sales", f"{total_sales:,.2f}")
 
 
-
-# Monthly sales trend
-
-
+# Monthly sales chart
 st.subheader("Monthly Sales Trend")
 
 monthly_sales = (
@@ -118,8 +107,8 @@ fig_monthly = px.line(
 )
 
 fig_monthly.update_layout(
-    title_font_size=26,
-    font=dict(size=18),
+    title_font_size=24,
+    font=dict(size=16),
     xaxis_title="Month",
     yaxis_title="Total Sales"
 )
@@ -127,10 +116,7 @@ fig_monthly.update_layout(
 st.plotly_chart(fig_monthly, use_container_width=True)
 
 
-
 # Top product categories
-
-
 st.subheader("Top Product Categories")
 
 top_categories = (
@@ -152,8 +138,8 @@ fig_categories = px.bar(
 )
 
 fig_categories.update_layout(
-    title_font_size=26,
-    font=dict(size=18),
+    title_font_size=24,
+    font=dict(size=16),
     xaxis_title="Product Category",
     yaxis_title="Order Count"
 )
@@ -161,10 +147,7 @@ fig_categories.update_layout(
 st.plotly_chart(fig_categories, use_container_width=True)
 
 
-
 # Orders by state
-
-
 st.subheader("Orders by Customer State")
 
 state_orders = (
@@ -186,8 +169,8 @@ fig_states = px.bar(
 )
 
 fig_states.update_layout(
-    title_font_size=26,
-    font=dict(size=18),
+    title_font_size=24,
+    font=dict(size=16),
     xaxis_title="Customer State",
     yaxis_title="Order Count"
 )
@@ -195,60 +178,70 @@ fig_states.update_layout(
 st.plotly_chart(fig_states, use_container_width=True)
 
 
-
-# Payment type analysis
-
-
-st.subheader("Payment Type Revenue Distribution")
+# Payment type distribution
+st.subheader("Payment Type Distribution")
 
 payment_summary = (
     filtered_df
-    .groupby("payment_type")["payment_value"]
-    .sum()
+    .groupby("payment_type")["order_id"]
+    .count()
     .sort_values(ascending=False)
     .reset_index()
 )
 
-payment_summary.columns = ["Payment Type", "Total Revenue"]
+payment_summary.columns = ["Payment Type", "Number of Orders"]
 
-fig_payment = px.pie(
+fig_payment = px.bar(
     payment_summary,
-    names="Payment Type",
-    values="Total Revenue",
-    title="Revenue by Payment Type"
+    x="Payment Type",
+    y="Number of Orders",
+    title="Payment Type Distribution"
 )
 
 fig_payment.update_layout(
-    title_font_size=26,
-    font=dict(size=18)
+    title_font_size=24,
+    font=dict(size=16),
+    xaxis_title="Payment Type",
+    yaxis_title="Number of Orders"
 )
 
 st.plotly_chart(fig_payment, use_container_width=True)
 
 
+# Price vs freight
+st.subheader("Price vs Freight Value")
 
-# Dataset suitability for ML
+scatter_sample = filtered_df.sample(
+    min(5000, len(filtered_df)),
+    random_state=42
+) if len(filtered_df) > 0 else filtered_df
+
+fig_scatter = px.scatter(
+    scatter_sample,
+    x="price",
+    y="freight_value",
+    title="Price vs Freight Value",
+    opacity=0.6
+)
+
+fig_scatter.update_layout(
+    title_font_size=24,
+    font=dict(size=16),
+    xaxis_title="Price",
+    yaxis_title="Freight Value"
+)
+
+st.plotly_chart(fig_scatter, use_container_width=True)
+
 
 
 st.subheader("Why this Dataset is Suitable for Machine Learning")
 
-st.markdown(
+st.write(
     """
-    The dataset is suitable for machine learning because it contains customer IDs, order IDs,
-    product IDs, product categories, payment values, timestamps, and transaction behaviour.
-    These fields support recommendation systems, customer behaviour analysis, market basket analysis,
+    The dataset contains customer IDs, product IDs, order IDs, product categories,
+    payment values, timestamps, price, and freight values. These fields support
+    recommendation systems, market basket analysis, customer behaviour analysis,
     and dashboard-based business intelligence.
     """
-)
-
-
-
-# Data preview
-
-
-st.subheader("Filtered Data Preview")
-
-st.dataframe(
-    filtered_df.head(50),
-    use_container_width=True
 )
