@@ -5,7 +5,7 @@ import plotly.express as px
 
 
 # Page title
-st.title("Brazilian E-Commerce Retail Dashboard")
+st.title("Brazilian ECommerce Retail Dashboard")
 
 
 # Load dataset
@@ -21,7 +21,7 @@ def load_data():
 
 data_load_state = st.text("Loading data...")
 df = load_data()
-data_load_state.text("Done! Dataset loaded successfully.")
+data_load_state.text("Dataset loaded successfully.")
 
 
 # Brazilian state code to full name mapping
@@ -62,7 +62,14 @@ df["customer_state_full"] = df["customer_state"].map(state_mapping)
 st.write(
     """
     This dashboard summarises the most important aspects of the Brazilian Olist retail dataset.
-    It uses simple filters and clear charts suitable for adults aged 65+.
+    Choose Customer State:
+    This dropdown filter allows users to view retail insights for specific Brazilian states.
+
+    Choose Payment Type:
+    This dropdown filter enables users to analyse customer behaviour based on different payment methods such as credit card, boleto, voucher, and debit card.
+
+    Purchase Month Slider:
+    The slider allows users to filter the dataset by calendar month (1–12). Moving the slider dynamically updates all dashboard charts  to display transactions up to the selected month, providing interactive month based sales analysis.
     """
 )
 
