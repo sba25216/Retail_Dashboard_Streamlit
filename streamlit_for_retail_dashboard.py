@@ -63,14 +63,14 @@ st.write(
     """
     This dashboard summarises the most important aspects of the Brazilian Olist retail dataset.
     
-    ** Choose Customer State:** 
+    **Choose Customer State:**  
     This dropdown filter allows users to view retail insights for specific Brazilian states.
 
-    ** Choose Payment Type:** 
+    **Choose Payment Type:**  
     This dropdown filter enables users to analyse customer behaviour based on different payment methods such as credit card, boleto, voucher, and debit card.
 
-    ** Purchase Month Slider:** 
-    The slider allows users to filter the dataset by calendar month (1–12). Moving the slider dynamically updates all dashboard charts  to display transactions up to the selected month, providing interactive month based sales analysis.
+    **Purchase Month Slider:**  
+    The slider allows users to filter the dataset by calendar month (1–12). Moving the slider dynamically updates all dashboard charts to display transactions up to the selected month, providing interactive month based sales analysis.
     """
 )
 
