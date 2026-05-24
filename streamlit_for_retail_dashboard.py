@@ -62,6 +62,7 @@ df["customer_state_full"] = df["customer_state"].map(state_mapping)
 st.write(
     """
     This dashboard summarises the most important aspects of the Brazilian Olist retail dataset.
+    
     Choose Customer State:
     This dropdown filter allows users to view retail insights for specific Brazilian states.
 
