@@ -5,7 +5,7 @@ import plotly.express as px
 
 
 # Page title
-st.title("Brazilian E-Commerce Retail Dashboard")
+st.title("Brazilian ECommerce Retail Dashboard")
 
 
 # Load dataset
@@ -19,9 +19,44 @@ def load_data():
     return data
 
 
-data_load_state = st.text("Loading data...")
+data_load_state = st.text("Loading data")
 df = load_data()
-data_load_state.text("Done! Dataset loaded successfully.")
+
+
+# State code mapping to full Brazilian state names
+state_mapping = {
+    "AC": "Acre",
+    "AL": "Alagoas",
+    "AP": "Amapa",
+    "AM": "Amazonas",
+    "BA": "Bahia",
+    "CE": "Ceara",
+    "DF": "Distrito Federal",
+    "ES": "Espirito Santo",
+    "GO": "Goias",
+    "MA": "Maranhao",
+    "MT": "Mato Grosso",
+    "MS": "Mato Grosso do Sul",
+    "MG": "Minas Gerais",
+    "PA": "Para",
+    "PB": "Paraiba",
+    "PR": "Parana",
+    "PE": "Pernambuco",
+    "PI": "Piaui",
+    "RJ": "Rio de Janeiro",
+    "RN": "Rio Grande do Norte",
+    "RS": "Rio Grande do Sul",
+    "RO": "Rondonia",
+    "RR": "Roraima",
+    "SC": "Santa Catarina",
+    "SP": "Sao Paulo",
+    "SE": "Sergipe",
+    "TO": "Tocantins"
+}
+
+df["customer_state_full"] = df["customer_state"].map(state_mapping)
+
+data_load_state.text("Dataset loaded successfully.")
 
 
 # Dashboard description
@@ -39,11 +74,26 @@ if st.checkbox("Show raw data"):
 
 
 # Sidebar filters
+
+# Month slider filter
+st.sidebar.subheader("Month Filter")
+
+selected_month = st.sidebar.slider(
+    "Select Purchase Month",
+    min_value=1,
+    max_value=12,
+    value=12
+)
+
+filtered_df = filtered_df[
+    filtered_df["order_purchase_timestamp"].dt.month <= selected_month
+]
+
 st.sidebar.header("Filters")
 
 selected_state = st.sidebar.selectbox(
     "Choose Customer State",
-    ["All"] + sorted(df["customer_state"].dropna().unique().tolist())
+    ["All"] + sorted(df["customer_state_full"].dropna().unique().tolist())
 )
 
 selected_payment = st.sidebar.selectbox(
@@ -56,7 +106,7 @@ filtered_df = df.copy()
 
 if selected_state != "All":
     filtered_df = filtered_df[
-        filtered_df["customer_state"] == selected_state
+        filtered_df["customer_state_full"] == selected_state
     ]
 
 if selected_payment != "All":
@@ -151,7 +201,7 @@ st.subheader("Orders by Customer State")
 
 state_orders = (
     filtered_df
-    .groupby("customer_state")["order_id"]
+    .groupby("customer_state_full")["order_id"]
     .count()
     .sort_values(ascending=False)
     .head(10)
@@ -291,14 +341,14 @@ fig_avg_price.update_layout(
 )
 
 st.plotly_chart(fig_avg_price, use_container_width=True)
-# Plot Explanation
-st.subheader("Why this Dataset is Suitable for Machine Learning")
+# Explanation
+st.subheader("Dataset Description")
 
 st.write(
     """
     The dataset contains customer IDs, product IDs, order IDs, product categories,
     payment values, timestamps, price, and freight values. These fields support
     recommendation systems, market basket analysis, customer behaviour analysis,
-    and dashboard-based business intelligence.
+    and dashboard based business intelligence.
     """
 )
