@@ -28,7 +28,6 @@ data_load_state.text("Done! Dataset loaded successfully.")
 st.write(
     """
     This dashboard summarises the most important aspects of the Brazilian Olist retail dataset.
-    It uses simple filters and clear charts suitable for adults aged 65+.
     """
 )
 
@@ -235,6 +234,64 @@ st.plotly_chart(fig_scatter, use_container_width=True)
 
 
 
+
+# Revenue by payment type pie chart
+st.subheader("Revenue Distribution by Payment Type")
+
+payment_revenue = (
+    filtered_df
+    .groupby("payment_type")["payment_value"]
+    .sum()
+    .reset_index()
+)
+
+payment_revenue.columns = ["Payment Type", "Total Revenue"]
+
+fig_pie = px.pie(
+    payment_revenue,
+    names="Payment Type",
+    values="Total Revenue",
+    title="Revenue Distribution by Payment Type"
+)
+
+fig_pie.update_layout(
+    title_font_size=24,
+    font=dict(size=16)
+)
+
+st.plotly_chart(fig_pie, use_container_width=True)
+
+
+# Average price by category
+st.subheader("Average Product Price by Category")
+
+avg_price_category = (
+    filtered_df
+    .groupby("product_category_name_english")["price"]
+    .mean()
+    .sort_values(ascending=False)
+    .head(10)
+    .reset_index()
+)
+
+avg_price_category.columns = ["Product Category", "Average Price"]
+
+fig_avg_price = px.bar(
+    avg_price_category,
+    x="Product Category",
+    y="Average Price",
+    title="Top Categories by Average Product Price"
+)
+
+fig_avg_price.update_layout(
+    title_font_size=24,
+    font=dict(size=16),
+    xaxis_title="Product Category",
+    yaxis_title="Average Price"
+)
+
+st.plotly_chart(fig_avg_price, use_container_width=True)
+# Plot Explanation
 st.subheader("Why this Dataset is Suitable for Machine Learning")
 
 st.write(
