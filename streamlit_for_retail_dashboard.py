@@ -63,13 +63,13 @@ st.write(
     """
     This dashboard summarises the most important aspects of the Brazilian Olist retail dataset.
     
-    Choose Customer State:
+    ** Choose Customer State:** 
     This dropdown filter allows users to view retail insights for specific Brazilian states.
 
-    Choose Payment Type:
+    ** Choose Payment Type:** 
     This dropdown filter enables users to analyse customer behaviour based on different payment methods such as credit card, boleto, voucher, and debit card.
 
-    Purchase Month Slider:
+    ** Purchase Month Slider:** 
     The slider allows users to filter the dataset by calendar month (1–12). Moving the slider dynamically updates all dashboard charts  to display transactions up to the selected month, providing interactive month based sales analysis.
     """
 )
@@ -347,13 +347,13 @@ st.plotly_chart(fig_avg_price, use_container_width=True)
 
 
 # ML suitability explanation
-st.subheader("Why this Dataset is Suitable for Machine Learning")
+st.subheader("Dataset Selection")
 
 st.write(
     """
     The dataset contains customer IDs, product IDs, order IDs, product categories,
     payment values, timestamps, price, and freight values. These fields support
     recommendation systems, market basket analysis, customer behaviour analysis,
-    and dashboard-based business intelligence.
+    and dashboard based business intelligence.
     """
 )
